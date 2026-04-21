@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فُرَص — الإحصائيات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .stat-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .bar-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 11px;
+  }
+  .bar-row:last-child { border-bottom: none; }
+  .bar-label { width: 110px; color: var(--text-secondary); flex-shrink: 0; }
+  .bar-track { flex:1; height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 3px; }
+  .bar-val   { width: 28px; text-align: left; color: var(--text-primary); font-weight: 600; }
+
+  .donut-wrap { padding: 16px; display: flex; align-items: center; gap: 20px; }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .month-bars { padding: 16px; display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+  .m-bar-wrap { flex:1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .m-bar      { width: 100%; border-radius: 3px 3px 0 0; background: var(--green); opacity: .7; }
+  .m-bar.highlight { opacity: 1; }
+  .m-label    { font-size: 9px; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<div id="topbar-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="content">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">الإحصائيات</div>
+      <div class="page-sub">تقارير وتحليلات الطلبات والفرص</div>
+    </div>
+    <button class="btn-primary">تصدير التقرير</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="scard">
+      <div class="sc-num">74</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#888780"></span>إجمالي الطلبات</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num" style="color:#0F6E56">41.9%</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#1D9E75"></span>نسبة القبول</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num">12</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#378ADD"></span>فرصة نشطة</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num">3.6</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#EF9F27"></span>متوسط المعدل</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+
+    <!-- Applications by status -->
+    <div class="stat-card">
+      <div class="card-hdr">
+        <span class="card-title">الطلبات حسب الحالة</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">قيد المراجعة</span>
+        <div class="bar-track"><div class="bar-fill" style="width:65%;background:#EF9F27"></div></div>
+        <span class="bar-val">18</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">مقبول</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:#1D9E75"></div></div>
+        <span class="bar-val">31</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">مرفوض</span>
+        <div class="bar-track"><div class="bar-fill" style="width:80%;background:#E24B4A"></div></div>
+        <span class="bar-val">25</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">جاري المراجعة</span>
+        <div class="bar-track"><div class="bar-fill" style="width:30%;background:#378ADD"></div></div>
+        <span class="bar-val">8</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">إجمالي</span>
+        <div class="bar-track"><div class="bar-fill" style="width:74%;background:#888"></div></div>
+        <span class="bar-val">74</span>
+      </div>
+    </div>
+
+    <!-- Monthly trend -->
+    <div class="stat-card">
+      <div class="card-hdr">
+        <span class="card-title">الطلبات الشهرية</span>
+      </div>
+      <div class="month-bars">
+        <div class="m-bar-wrap"><div class="m-bar" style="height:40%"></div><div class="m-label">نوف</div></div>
+        <div class="m-bar-wrap"><div class="m-bar" style="height:55%"></div><div class="m-label">ديس</div></div>
+        <div class="m-bar-wrap"><div class="m-bar" style="height:35%"></div><div class="m-label">يناير</div></div>
+        <div class="m-bar-wrap"><div class="m-bar" style="height:65%"></div><div class="m-label">فبراير</div></div>
+        <div class="m-bar-wrap"><div class="m-bar" style="height:80%"></div><div class="m-label">مارس</div></div>
+        <div class="m-bar-wrap highlight"><div class="m-bar highlight" style="height:100%"></div><div class="m-label">أبريل</div></div>
+      </div>
+    </div>
+
+    <!-- Top opportunities -->
+    <div class="stat-card">
+      <div class="card-hdr">
+        <span class="card-title">أكثر الفرص طلباً</span>
+        <a class="card-action" href="opportunities.html">عرض الكل</a>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">UN Youth</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:#378ADD"></div></div>
+        <span class="bar-val">23</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">بنك الاستثمار</span>
+        <div class="bar-track"><div class="bar-fill" style="width:78%;background:#1D9E75"></div></div>
+        <span class="bar-val">18</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">برنامج الريادة</span>
+        <div class="bar-track"><div class="bar-fill" style="width:65%;background:#534AB7"></div></div>
+        <span class="bar-val">15</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Microsoft MENA</span>
+        <div class="bar-track"><div class="bar-fill" style="width:52%;background:#EF9F27"></div></div>
+        <span class="bar-val">12</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">World Bank</span>
+        <div class="bar-track"><div class="bar-fill" style="width:35%;background:#E24B4A"></div></div>
+        <span class="bar-val">8</span>
+      </div>
+    </div>
+
+    <!-- Universities -->
+    <div class="stat-card">
+      <div class="card-hdr">
+        <span class="card-title">توزيع الجامعات</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">جامعة القاهرة</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:#1D9E75"></div></div>
+        <span class="bar-val">22</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">جامعة عين شمس</span>
+        <div class="bar-track"><div class="bar-fill" style="width:72%;background:#378ADD"></div></div>
+        <span class="bar-val">16</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">الإسكندرية</span>
+        <div class="bar-track"><div class="bar-fill" style="width:54%;background:#534AB7"></div></div>
+        <span class="bar-val">12</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">الجامعة الأمريكية</span>
+        <div class="bar-track"><div class="bar-fill" style="width:40%;background:#EF9F27"></div></div>
+        <span class="bar-val">9</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">أخرى</span>
+        <div class="bar-track"><div class="bar-fill" style="width:66%;background:#888"></div></div>
+        <span class="bar-val">15</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>injectNav('statistics');</script>
+</body>
+</html>

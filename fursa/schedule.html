@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فُرَص — المواعيد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .sched-grid { display: grid; grid-template-columns: 1fr 280px; gap: 14px; }
+  .sched-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .sched-item {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer; transition: box-shadow .15s;
+  }
+  .sched-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+
+  .sched-date-box {
+    width: 42px; flex-shrink: 0;
+    background: var(--bg-secondary);
+    border-radius: 8px; padding: 6px 4px;
+    text-align: center;
+    border: 0.5px solid var(--border);
+  }
+  .sched-day   { font-size: 18px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .sched-month { font-size: 9px; color: var(--text-secondary); margin-top: 2px; }
+
+  .sched-info { flex: 1; }
+  .sched-title { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .sched-sub   { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+  .sched-meta  { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .sched-time  { font-size: 10px; color: var(--green-dark); background: var(--green-light); padding: 2px 7px; border-radius: 6px; }
+  .sched-type  { font-size: 10px; color: var(--text-tertiary); }
+
+  .upcoming-hdr { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+
+  .mini-calendar {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; padding: 10px; }
+  .cal-day-name { text-align: center; font-size: 9px; color: var(--text-tertiary); padding: 4px 0; }
+  .cal-day {
+    text-align: center; font-size: 11px; padding: 5px 2px;
+    border-radius: 5px; cursor: pointer; color: var(--text-secondary);
+  }
+  .cal-day:hover { background: var(--bg-secondary); }
+  .cal-day.today { background: var(--green); color: #fff; font-weight: 700; }
+  .cal-day.has-event { font-weight: 600; color: var(--text-primary); }
+  .cal-day.has-event::after { content:''; display:block; width:4px; height:4px; background:var(--green); border-radius:50%; margin:1px auto 0; }
+
+  .deadline-list { display: flex; flex-direction: column; }
+  .deadline-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 16px; border-bottom: 0.5px solid var(--border); font-size: 11px;
+  }
+  .deadline-item:last-child { border-bottom: none; }
+  .deadline-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .deadline-name { flex:1; color: var(--text-primary); font-weight: 500; }
+  .deadline-date { color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<div id="topbar-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="content">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">المواعيد</div>
+      <div class="page-sub">5 مواعيد قادمة هذا الشهر</div>
+    </div>
+    <button class="btn-primary">+ موعد جديد</button>
+  </div>
+
+  <div class="sched-grid">
+    <div>
+      <div class="upcoming-hdr">المواعيد القادمة</div>
+      <div class="sched-list">
+
+        <div class="sched-item">
+          <div class="sched-date-box">
+            <div class="sched-day">23</div>
+            <div class="sched-month">أبريل</div>
+          </div>
+          <div class="sched-info">
+            <div class="sched-title">مقابلة — سارة محمد علي</div>
+            <div class="sched-sub">برنامج UN Youth — جنيف</div>
+            <div class="sched-meta">
+              <span class="sched-time">10:00 ص</span>
+              <span class="sched-type">مقابلة أونلاين</span>
+            </div>
+          </div>
+          <span class="status-pill s-pending"><span class="pill-dot"></span>قادم</span>
+        </div>
+
+        <div class="sched-item">
+          <div class="sched-date-box">
+            <div class="sched-day">24</div>
+            <div class="sched-month">أبريل</div>
+          </div>
+          <div class="sched-info">
+            <div class="sched-title">اجتماع مراجعة الطلبات</div>
+            <div class="sched-sub">مراجعة دفعة Microsoft MENA</div>
+            <div class="sched-meta">
+              <span class="sched-time">2:00 م</span>
+              <span class="sched-type">اجتماع داخلي</span>
+            </div>
+          </div>
+          <span class="status-pill s-reviewing"><span class="pill-dot"></span>قادم</span>
+        </div>
+
+        <div class="sched-item">
+          <div class="sched-date-box">
+            <div class="sched-day">26</div>
+            <div class="sched-month">أبريل</div>
+          </div>
+          <div class="sched-info">
+            <div class="sched-title">مقابلة — نور رضا حسن</div>
+            <div class="sched-sub">Microsoft MENA — دبي</div>
+            <div class="sched-meta">
+              <span class="sched-time">11:30 ص</span>
+              <span class="sched-type">مقابلة أونلاين</span>
+            </div>
+          </div>
+          <span class="status-pill s-pending"><span class="pill-dot"></span>قادم</span>
+        </div>
+
+        <div class="sched-item">
+          <div class="sched-date-box">
+            <div class="sched-day">28</div>
+            <div class="sched-month">أبريل</div>
+          </div>
+          <div class="sched-info">
+            <div class="sched-title">إغلاق طلبات World Bank</div>
+            <div class="sched-sub">آخر موعد لاستقبال الطلبات</div>
+            <div class="sched-meta">
+              <span class="sched-time">11:59 م</span>
+              <span class="sched-type">موعد نهائي</span>
+            </div>
+          </div>
+          <span class="status-pill s-rejected" style="background:#FCEBEB;color:#A32D2D"><span class="pill-dot"></span>هام</span>
+        </div>
+
+        <div class="sched-item">
+          <div class="sched-date-box">
+            <div class="sched-day">30</div>
+            <div class="sched-month">أبريل</div>
+          </div>
+          <div class="sched-info">
+            <div class="sched-title">إغلاق طلبات UN Youth</div>
+            <div class="sched-sub">آخر موعد لاستقبال الطلبات</div>
+            <div class="sched-meta">
+              <span class="sched-time">11:59 م</span>
+              <span class="sched-type">موعد نهائي</span>
+            </div>
+          </div>
+          <span class="status-pill s-rejected" style="background:#FCEBEB;color:#A32D2D"><span class="pill-dot"></span>هام</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- Mini Calendar -->
+      <div class="mini-calendar">
+        <div class="card-hdr">
+          <span class="card-title">أبريل 2026</span>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-name">أح</div>
+          <div class="cal-day-name">إث</div>
+          <div class="cal-day-name">ثل</div>
+          <div class="cal-day-name">أر</div>
+          <div class="cal-day-name">خم</div>
+          <div class="cal-day-name">جم</div>
+          <div class="cal-day-name">سب</div>
+          <!-- April 2026 starts Wednesday -->
+          <div class="cal-day" style="color:transparent">-</div>
+          <div class="cal-day" style="color:transparent">-</div>
+          <div class="cal-day" style="color:transparent">-</div>
+          <div class="cal-day">1</div>
+          <div class="cal-day">2</div>
+          <div class="cal-day">3</div>
+          <div class="cal-day">4</div>
+          <div class="cal-day">5</div>
+          <div class="cal-day">6</div>
+          <div class="cal-day">7</div>
+          <div class="cal-day">8</div>
+          <div class="cal-day">9</div>
+          <div class="cal-day">10</div>
+          <div class="cal-day">11</div>
+          <div class="cal-day">12</div>
+          <div class="cal-day">13</div>
+          <div class="cal-day">14</div>
+          <div class="cal-day">15</div>
+          <div class="cal-day">16</div>
+          <div class="cal-day">17</div>
+          <div class="cal-day">18</div>
+          <div class="cal-day">19</div>
+          <div class="cal-day">20</div>
+          <div class="cal-day today">21</div>
+          <div class="cal-day">22</div>
+          <div class="cal-day has-event">23</div>
+          <div class="cal-day has-event">24</div>
+          <div class="cal-day">25</div>
+          <div class="cal-day has-event">26</div>
+          <div class="cal-day">27</div>
+          <div class="cal-day has-event">28</div>
+          <div class="cal-day">29</div>
+          <div class="cal-day has-event">30</div>
+        </div>
+      </div>
+
+      <!-- Upcoming deadlines -->
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">المواعيد النهائية</span>
+          <a class="card-action" href="opportunities.html">الفرص</a>
+        </div>
+        <div class="deadline-list">
+          <div class="deadline-item">
+            <div class="deadline-dot" style="background:#E24B4A"></div>
+            <div class="deadline-name">UN Youth</div>
+            <div class="deadline-date">30 أبريل</div>
+          </div>
+          <div class="deadline-item">
+            <div class="deadline-dot" style="background:#E24B4A"></div>
+            <div class="deadline-name">World Bank</div>
+            <div class="deadline-date">28 أبريل</div>
+          </div>
+          <div class="deadline-item">
+            <div class="deadline-dot" style="background:#EF9F27"></div>
+            <div class="deadline-name">Microsoft MENA</div>
+            <div class="deadline-date">10 مايو</div>
+          </div>
+          <div class="deadline-item">
+            <div class="deadline-dot" style="background:#1D9E75"></div>
+            <div class="deadline-name">بنك الاستثمار</div>
+            <div class="deadline-date">15 مايو</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>injectNav('schedule');</script>
+</body>
+</html>

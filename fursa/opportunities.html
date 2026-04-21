@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فُرَص — الفرص الحالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .opp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .opp-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: box-shadow .15s;
+    cursor: pointer;
+  }
+  .opp-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,.08); }
+  .opp-card-top {
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  }
+  .opp-org-logo {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .opp-card-name { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .opp-card-org  { font-size: 10px; color: var(--text-secondary); }
+  .opp-card-body { padding: 12px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .opp-tag {
+    display: inline-flex; align-items: center;
+    font-size: 10px; color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 2px 8px; border-radius: 8px;
+    border: 0.5px solid var(--border);
+  }
+  .opp-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .opp-deadline { font-size: 10px; color: var(--text-tertiary); }
+  .opp-deadline span { color: #854F0B; font-weight: 500; }
+  .opp-footer {
+    padding: 10px 16px;
+    border-top: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .opp-apps { font-size: 10px; color: var(--text-secondary); }
+  .progress-mini { height: 3px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; flex: 1; margin: 0 8px; }
+  .progress-mini-fill { height: 100%; background: var(--green); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="topbar-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="content">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">الفرص الحالية</div>
+      <div class="page-sub">12 فرصة نشطة متاحة</div>
+    </div>
+    <button class="btn-primary">+ إضافة فرصة</button>
+  </div>
+
+  <div class="filters-row">
+    <button class="ftab active" onclick="filterOpp(this,'all')">الكل</button>
+    <button class="ftab" onclick="filterOpp(this,'open')">مفتوحة</button>
+    <button class="ftab" onclick="filterOpp(this,'closing')">تُغلق قريباً</button>
+    <button class="ftab" onclick="filterOpp(this,'closed')">مغلقة</button>
+    <div class="search-wrap">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="opacity:.4;flex-shrink:0">
+        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="ابحث عن فرصة..." oninput="searchOpp(this.value)">
+    </div>
+  </div>
+
+  <div class="opp-grid" id="opp-grid"></div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  injectNav('opportunities');
+
+  const opportunities = [
+    { id:1, name:'برنامج UN Youth', org:'الأمم المتحدة', location:'جنيف', color:'#E6F1FB', tc:'#185FA5', tags:['دبلوماسية','علاقات دولية'], deadline:'30 أبريل 2026', apps:23, max:30, status:'closing' },
+    { id:2, name:'تدريب بنك الاستثمار', org:'بنك مصر', location:'القاهرة', color:'#E1F5EE', tc:'#0F6E56', tags:['مالية','اقتصاد'], deadline:'15 مايو 2026', apps:18, max:25, status:'open' },
+    { id:3, name:'Microsoft MENA', org:'مايكروسوفت', location:'دبي', color:'#EEEDFE', tc:'#534AB7', tags:['تقنية','برمجة'], deadline:'10 مايو 2026', apps:12, max:20, status:'open' },
+    { id:4, name:'World Bank Program', org:'البنك الدولي', location:'واشنطن', color:'#FAEEDA', tc:'#854F0B', tags:['اقتصاد','تنمية'], deadline:'5 مايو 2026', apps:8, max:15, status:'closing' },
+    { id:5, name:'برنامج الريادة', org:'وزارة الاستثمار', location:'القاهرة', color:'#EAF3DE', tc:'#3B6D11', tags:['ريادة أعمال','ابتكار'], deadline:'20 مايو 2026', apps:15, max:20, status:'open' },
+    { id:6, name:'Google Summer Intern', org:'جوجل', location:'عن بُعد', color:'#FAECE7', tc:'#993C1D', tags:['تقنية','AI'], deadline:'1 أبريل 2026', apps:40, max:40, status:'closed' },
+    { id:7, name:'UNDP Youth Fellowship', org:'برنامج الأمم المتحدة', location:'نيويورك', color:'#E6F1FB', tc:'#185FA5', tags:['تطوير','قيادة'], deadline:'25 مايو 2026', apps:6, max:12, status:'open' },
+    { id:8, name:'Chevron Engineering', org:'شيفرون', location:'الرياض', color:'#FAEEDA', tc:'#854F0B', tags:['هندسة','نفط'], deadline:'12 مايو 2026', apps:9, max:10, status:'closing' },
+  ];
+
+  let currentFilter = 'all', currentSearch = '';
+
+  function renderOpps() {
+    const grid = document.getElementById('opp-grid');
+    let list = currentFilter === 'all' ? opportunities : opportunities.filter(o => o.status === currentFilter);
+    if (currentSearch) list = list.filter(o => o.name.includes(currentSearch) || o.org.includes(currentSearch));
+    grid.innerHTML = list.map(o => {
+      const pct = Math.round(o.apps / o.max * 100);
+      const statusLabel = { open:'مفتوحة', closing:'تُغلق قريباً', closed:'مغلقة' }[o.status];
+      const statusCls   = { open:'s-accepted', closing:'s-pending', closed:'s-rejected' }[o.status];
+      return `<div class="opp-card" onclick="location.href='applications.html'">
+        <div class="opp-card-top">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div class="opp-org-logo" style="background:${o.color};color:${o.tc}">${o.org.charAt(0)}</div>
+            <div>
+              <div class="opp-card-name">${o.name}</div>
+              <div class="opp-card-org">${o.org} — ${o.location}</div>
+            </div>
+          </div>
+          <span class="status-pill ${statusCls}"><span class="pill-dot"></span>${statusLabel}</span>
+        </div>
+        <div class="opp-card-body">
+          <div class="opp-tags">${o.tags.map(t=>`<span class="opp-tag">${t}</span>`).join('')}</div>
+          <div class="opp-deadline">آخر موعد: <span>${o.deadline}</span></div>
+        </div>
+        <div class="opp-footer">
+          <span class="opp-apps">${o.apps} / ${o.max} متقدم</span>
+          <div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:10px;color:var(--text-tertiary)">${pct}%</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function filterOpp(el, f) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = f; renderOpps();
+  }
+
+  function searchOpp(v) { currentSearch = v; renderOpps(); }
+
+  renderOpps();
+</script>
+</body>
+</html>

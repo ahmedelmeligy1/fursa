@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فُرَص — المتقدمون</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .ap-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    text-align: center; cursor: pointer; transition: box-shadow .15s;
+  }
+  .ap-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,.08); }
+  .ap-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+  }
+  .ap-name  { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .ap-meta  { font-size: 10px; color: var(--text-secondary); line-height: 1.6; }
+  .ap-opp   { font-size: 10px; color: var(--green-dark); background: var(--green-light); padding: 2px 8px; border-radius: 8px; }
+  .ap-gpa   { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+  .ap-footer { display: flex; gap: 6px; width: 100%; }
+  .ap-btn { flex:1; font-size:10px; padding:5px 8px; border-radius:6px; border:0.5px solid var(--border); background:transparent; cursor:pointer; font-family:'Cairo',sans-serif; color:var(--text-secondary); }
+  .ap-btn:hover { background: var(--bg-secondary); }
+</style>
+</head>
+<body>
+
+<div id="topbar-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="content">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">المتقدمون</div>
+      <div class="page-sub">74 متقدم مسجل في المنصة</div>
+    </div>
+  </div>
+
+  <div class="filters-row">
+    <button class="ftab active" onclick="filterApp(this,'all')">الكل</button>
+    <button class="ftab" onclick="filterApp(this,'pending')">قيد المراجعة</button>
+    <button class="ftab" onclick="filterApp(this,'accepted')">مقبول</button>
+    <button class="ftab" onclick="filterApp(this,'rejected')">مرفوض</button>
+    <div class="search-wrap">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="opacity:.4;flex-shrink:0">
+        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="ابحث باسم المتقدم..." oninput="searchApp(this.value)">
+    </div>
+  </div>
+
+  <div class="app-grid" id="app-grid"></div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  injectNav('applicants');
+
+  const applicants = [
+    {name:'سارة محمد علي',initials:'سم',color:'#E1F5EE',tc:'#0F6E56',univ:'جامعة القاهرة',major:'علاقات دولية',gpa:'3.8',opp:'UN Youth',status:'pending'},
+    {name:'كريم عصام',initials:'كع',color:'#E6F1FB',tc:'#185FA5',univ:'جامعة عين شمس',major:'إدارة أعمال',gpa:'3.5',opp:'بنك الاستثمار',status:'accepted'},
+    {name:'نور رضا حسن',initials:'نر',color:'#EEEDFE',tc:'#534AB7',univ:'جامعة الإسكندرية',major:'علوم حاسب',gpa:'3.9',opp:'Microsoft MENA',status:'pending'},
+    {name:'أحمد فاروق',initials:'أف',color:'#FAEEDA',tc:'#854F0B',univ:'الجامعة الأمريكية',major:'اقتصاد',gpa:'3.2',opp:'World Bank',status:'pending'},
+    {name:'منى سعيد',initials:'مس',color:'#FAECE7',tc:'#993C1D',univ:'جامعة المنصورة',major:'قانون',gpa:'2.8',opp:'UN Youth',status:'rejected'},
+    {name:'يوسف إبراهيم',initials:'يإ',color:'#EAF3DE',tc:'#3B6D11',univ:'جامعة أسيوط',major:'هندسة',gpa:'3.6',opp:'برنامج الريادة',status:'pending'},
+    {name:'لمياء سالم',initials:'لس',color:'#FAEEDA',tc:'#854F0B',univ:'جامعة طنطا',major:'طب',gpa:'3.7',opp:'WHO Internship',status:'accepted'},
+    {name:'عمر الشريف',initials:'عش',color:'#E6F1FB',tc:'#185FA5',univ:'جامعة القاهرة',major:'فيزياء',gpa:'3.4',opp:'CERN Program',status:'pending'},
+  ];
+
+  const statusMap = { pending:'s-pending', accepted:'s-accepted', rejected:'s-rejected', reviewing:'s-reviewing' };
+  const statusLabel = { pending:'قيد المراجعة', accepted:'مقبول', rejected:'مرفوض', reviewing:'جاري المراجعة' };
+
+  let currentFilter = 'all', currentSearch = '';
+
+  function renderApplicants() {
+    const grid = document.getElementById('app-grid');
+    let list = currentFilter === 'all' ? applicants : applicants.filter(a => a.status === currentFilter);
+    if (currentSearch) list = list.filter(a => a.name.includes(currentSearch));
+    grid.innerHTML = list.map(a => `
+      <div class="ap-card" onclick="location.href='applications.html'">
+        <div class="ap-avatar" style="background:${a.color};color:${a.tc}">${a.initials}</div>
+        <div>
+          <div class="ap-name">${a.name}</div>
+          <div class="ap-meta">${a.univ}<br>${a.major}</div>
+        </div>
+        <div class="ap-opp">${a.opp}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="ap-gpa">GPA: ${a.gpa}</div>
+          <span class="status-pill ${statusMap[a.status]}"><span class="pill-dot"></span>${statusLabel[a.status]}</span>
+        </div>
+        <div class="ap-footer">
+          <button class="ap-btn">عرض الملف</button>
+          <button class="ap-btn" style="color:var(--green-dark);border-color:var(--green)">مراسلة</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function filterApp(el, f) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = f; renderApplicants();
+  }
+
+  function searchApp(v) { currentSearch = v; renderApplicants(); }
+
+  renderApplicants();
+</script>
+</body>
+</html>

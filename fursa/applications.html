@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فُرَص — مركز الطلبات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .main-grid { display: grid; grid-template-columns: 1fr 280px; gap: 14px; }
+  .opp-cell {
+    font-size: 11px; color: var(--text-secondary);
+    max-width: 120px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .action-btns { display: flex; gap: 4px; }
+  .right-col { display: flex; flex-direction: column; gap: 14px; }
+
+  .detail-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .detail-hdr {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border);
+    background: #E1F5EE;
+  }
+  .detail-name { font-size: 13px; font-weight: 700; color: #085041; }
+  .detail-sub  { font-size: 11px; color: #0F6E56; margin-top: 1px; }
+  .detail-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .dr-label { font-size: 11px; color: var(--text-secondary); flex-shrink: 0; }
+  .dr-value  { font-size: 11px; color: var(--text-primary); font-weight: 500; text-align: left; }
+  .detail-sep { height: 0.5px; background: var(--border); }
+  .detail-actions { display: flex; gap: 8px; padding: 0 16px 14px; }
+  .btn-full {
+    flex: 1; padding: 8px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'Cairo', sans-serif; border: none;
+  }
+  .btn-full-accept { background: var(--green); color: #fff; }
+  .btn-full-accept:hover { background: var(--green-dark); }
+  .btn-full-reject { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+  .btn-full-reject:hover { background: #F7C1C1; }
+  .timeline-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="content">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">مركز الطلبات</div>
+      <div class="page-sub">18 طلب جديد ينتظر المراجعة</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="scard">
+      <div class="sc-num">74</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#888780"></span>إجمالي الطلبات</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num" style="color:#854F0B">18</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#EF9F27"></span>قيد المراجعة</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num" style="color:#0F6E56">31</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#1D9E75"></span>مقبول</div>
+    </div>
+    <div class="scard">
+      <div class="sc-num" style="color:#A32D2D">25</div>
+      <div class="sc-lbl"><span class="sc-dot" style="background:#E24B4A"></span>مرفوض</div>
+    </div>
+  </div>
+
+  <div class="filters-row">
+    <button class="ftab active" onclick="filterApps(this,'all')">الكل</button>
+    <button class="ftab" onclick="filterApps(this,'pending')">قيد المراجعة</button>
+    <button class="ftab" onclick="filterApps(this,'reviewing')">جاري المراجعة</button>
+    <button class="ftab" onclick="filterApps(this,'accepted')">مقبول</button>
+    <button class="ftab" onclick="filterApps(this,'rejected')">مرفوض</button>
+    <div class="search-wrap">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="opacity:.4;flex-shrink:0">
+        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="ابحث باسم المتقدم..." oninput="searchApps(this.value)">
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-title">قائمة الطلبات</span>
+        <span class="card-action">تصدير</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>المتقدم</th>
+              <th>الفرصة</th>
+              <th>الحالة</th>
+              <th>تاريخ التقديم</th>
+              <th>إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="apps-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="detail-card">
+        <div class="detail-hdr">
+          <div class="detail-name" id="dp-name">سارة محمد علي</div>
+          <div class="detail-sub" id="dp-opp">برنامج UN Youth — جنيف</div>
+        </div>
+        <div class="detail-body">
+          <div class="detail-row">
+            <span class="dr-label">البريد</span>
+            <span class="dr-value" id="dp-email">sara.m@gmail.com</span>
+          </div>
+          <div class="detail-row">
+            <span class="dr-label">الجامعة</span>
+            <span class="dr-value" id="dp-univ">جامعة القاهرة</span>
+          </div>
+          <div class="detail-row">
+            <span class="dr-label">التخصص</span>
+            <span class="dr-value" id="dp-major">علاقات دولية</span>
+          </div>
+          <div class="detail-row">
+            <span class="dr-label">المعدل</span>
+            <span class="dr-value" id="dp-gpa">3.8 / 4.0</span>
+          </div>
+          <div class="detail-row">
+            <span class="dr-label">الحالة</span>
+            <span class="status-pill s-pending" id="dp-status"><span class="pill-dot"></span>قيد المراجعة</span>
+          </div>
+          <div class="detail-sep"></div>
+          <div class="detail-row"><span class="dr-label">رسالة التقديم</span></div>
+          <div style="font-size:11px;color:#6b6b67;line-height:1.7;" id="dp-msg">
+            أنا طالبة في السنة الثالثة وعندي خبرة في العمل التطوعي مع منظمات دولية ومهتمة بتطوير مهاراتي في مجال الدبلوماسية...
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button class="btn-full btn-full-accept">قبول الطلب</button>
+          <button class="btn-full btn-full-reject">رفض</button>
+        </div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="card-hdr">
+          <span class="card-title">سجل النشاط</span>
+        </div>
+        <div class="tl-list">
+          <div class="tl-item">
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-line"></div></div>
+            <div><div class="tl-text"><strong>سارة محمد</strong> تقدمت لـ UN Youth</div><div class="tl-time">منذ 20 دقيقة</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD"></div><div class="tl-line"></div></div>
+            <div><div class="tl-text">تم قبول طلب <strong>كريم عصام</strong></div><div class="tl-time">منذ ساعة</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#E24B4A"></div><div class="tl-line"></div></div>
+            <div><div class="tl-text">رُفض طلب <strong>منى سعيد</strong></div><div class="tl-time">منذ 3 ساعات</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#EF9F27"></div></div>
+            <div><div class="tl-text"><strong>نور رضا</strong> طلب قيد المراجعة</div><div class="tl-time">منذ 5 ساعات</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  injectNav('applications');
+
+  const apps = [
+    {id:1,name:'سارة محمد علي',initials:'سم',color:'#E1F5EE',tc:'#0F6E56',email:'sara.m@gmail.com',univ:'جامعة القاهرة',major:'علاقات دولية',gpa:'3.8 / 4.0',opp:'برنامج UN Youth',status:'pending',date:'21 أبريل 2026',msg:'أنا طالبة في السنة الثالثة وعندي خبرة في العمل التطوعي مع منظمات دولية ومهتمة بتطوير مهاراتي في مجال الدبلوماسية...'},
+    {id:2,name:'كريم عصام',initials:'كع',color:'#E6F1FB',tc:'#185FA5',email:'k.essam@hotmail.com',univ:'جامعة عين شمس',major:'إدارة أعمال',gpa:'3.5 / 4.0',opp:'تدريب بنك الاستثمار',status:'accepted',date:'20 أبريل 2026',msg:'خريج حديث بخبرة في التحليل المالي وأبحث عن فرصة لتطبيق مهاراتي في بيئة مصرفية احترافية...'},
+    {id:3,name:'نور رضا حسن',initials:'نر',color:'#EEEDFE',tc:'#534AB7',email:'nour.r@yahoo.com',univ:'جامعة الإسكندرية',major:'علوم حاسب',gpa:'3.9 / 4.0',opp:'Microsoft MENA',status:'reviewing',date:'19 أبريل 2026',msg:'طالبة دكتوراه في هندسة البرمجيات، ولدي مشاركات في مؤتمرات دولية حول الذكاء الاصطناعي...'},
+    {id:4,name:'أحمد فاروق',initials:'أف',color:'#FAEEDA',tc:'#854F0B',email:'a.farouk@gmail.com',univ:'الجامعة الأمريكية',major:'اقتصاد',gpa:'3.2 / 4.0',opp:'World Bank Program',status:'pending',date:'18 أبريل 2026',msg:'أهتم بالتنمية الاقتصادية في منطقة الشرق الأوسط وشمال أفريقيا وأبحث عن فرصة للمساهمة...'},
+    {id:5,name:'منى سعيد',initials:'مس',color:'#FAECE7',tc:'#993C1D',email:'mona.s@outlook.com',univ:'جامعة المنصورة',major:'قانون',gpa:'2.8 / 4.0',opp:'برنامج UN Youth',status:'rejected',date:'17 أبريل 2026',msg:'خريجة قانون وأسعى للعمل في مجال القانون الدولي وحقوق الإنسان...'},
+    {id:6,name:'يوسف إبراهيم',initials:'يإ',color:'#EAF3DE',tc:'#3B6D11',email:'youssef.i@gmail.com',univ:'جامعة أسيوط',major:'هندسة',gpa:'3.6 / 4.0',opp:'برنامج الريادة',status:'pending',date:'16 أبريل 2026',msg:'مهندس ميكانيكا مهتم بريادة الأعمال التقنية ولدي مشروع startup في مجال الطاقة المتجددة...'},
+  ];
+
+  const statusMap = {
+    pending:   {cls:'s-pending',   label:'قيد المراجعة'},
+    accepted:  {cls:'s-accepted',  label:'مقبول'},
+    rejected:  {cls:'s-rejected',  label:'مرفوض'},
+    reviewing: {cls:'s-reviewing', label:'جاري المراجعة'},
+  };
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function renderTable() {
+    const tbody = document.getElementById('apps-body');
+    let filtered = currentFilter === 'all' ? apps : apps.filter(a => a.status === currentFilter);
+    if (currentSearch) filtered = filtered.filter(a => a.name.includes(currentSearch));
+    tbody.innerHTML = filtered.map(a => {
+      const s = statusMap[a.status];
+      return `<tr onclick="showDetail(${a.id})">
+        <td><div class="applicant-cell">
+          <div class="avatar-sm" style="background:${a.color};color:${a.tc}">${a.initials}</div>
+          <div><div class="app-name">${a.name}</div><div class="app-email">${a.email}</div></div>
+        </div></td>
+        <td><div class="opp-cell">${a.opp}</div></td>
+        <td><span class="status-pill ${s.cls}"><span class="pill-dot"></span>${s.label}</span></td>
+        <td style="font-size:11px;color:#6b6b67">${a.date}</td>
+        <td><div class="action-btns">
+          <button class="btn-sm btn-accept" onclick="event.stopPropagation()">قبول</button>
+          <button class="btn-sm btn-reject" onclick="event.stopPropagation()">رفض</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function showDetail(id) {
+    const a = apps.find(x => x.id === id);
+    if (!a) return;
+    const s = statusMap[a.status];
+    document.getElementById('dp-name').textContent  = a.name;
+    document.getElementById('dp-opp').textContent   = a.opp;
+    document.getElementById('dp-email').textContent = a.email;
+    document.getElementById('dp-univ').textContent  = a.univ;
+    document.getElementById('dp-major').textContent = a.major;
+    document.getElementById('dp-gpa').textContent   = a.gpa;
+    document.getElementById('dp-msg').textContent   = a.msg;
+    const sp = document.getElementById('dp-status');
+    sp.className = 'status-pill ' + s.cls;
+    sp.innerHTML = '<span class="pill-dot"></span>' + s.label;
+  }
+
+  function filterApps(el, filter) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = filter;
+    renderTable();
+  }
+
+  function searchApps(val) {
+    currentSearch = val;
+    renderTable();
+  }
+
+  renderTable();
+</script>
+</body>
+</html>
